@@ -1,0 +1,85 @@
+package com.AdminDashboard;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.testng.annotations.Test;
+
+import com.LoginPage.OrangeHRMLoginPage;
+
+public class AddEmployees extends OrangeHRMLoginPage{
+	String FName;
+	String MName;
+	String LName;
+	String EmpID;
+	Row AddEmployeeRow;
+	Cell AddEmployeeRowOfCell;
+	@Test(priority=2)
+	public void AddEmployee() throws IOException {
+				
+		FileInputStream PropertiesFile=new FileInputStream("C:\\Users\\RAMBABU\\Desktop\\OrangeHRM\\OrangaHRM\\src\\test\\java\\com\\config\\OrangeHRMAdminPageElements.properties");
+		Properties property=new Properties();
+		property.load(PropertiesFile);
+		
+		By PIMProperty=By.id(property.getProperty("AddEmployeePIMProperty"));
+		WebElement PIMList=driver.findElement(PIMProperty);
+		
+		Actions actions=new Actions(driver);
+		actions.moveToElement(PIMList).perform();
+		By AddEmployeeProperty=By.id(property.getProperty("AddEmployeePIMAddEmployee"));
+		WebElement AddEmployee=driver.findElement(AddEmployeeProperty);
+		AddEmployee.click();
+			
+		By firstnameProperty=By.name(property.getProperty("AddEmployeeFirstnameProperty"));
+		By middlenameProperty=By.name(property.getProperty("AddEmployeeMiddlenameProperty"));
+		By lastnameProperty=By.name(property.getProperty("AddEmployeeLastnameProperty"));
+		By EmployeeIDProperty=By.name(property.getProperty("AddEmployeeIDProperty"));
+		By SaveButtonProperty=By.id(property.getProperty("AddEmployeeSaveButtonProperty"));
+		
+		WebElement firstname=driver.findElement(firstnameProperty);
+		WebElement middlename=driver.findElement(middlenameProperty);
+		WebElement lastname=driver.findElement(lastnameProperty);
+		WebElement EmployeeID=driver.findElement(EmployeeIDProperty);
+		WebElement SaveButton=driver.findElement(SaveButtonProperty);
+		
+		FileInputStream ExcelTestDataFile=new FileInputStream("C:\\Users\\RAMBABU\\Desktop\\OrangeHRM\\OrangaHRM\\src\\test\\java\\com\\ExcelTestDataFiles\\TestData.xlsx");
+		@SuppressWarnings("resource")
+		XSSFWorkbook workbook=new XSSFWorkbook(ExcelTestDataFile);
+		XSSFSheet AddEmployeeSheet=workbook.getSheet("AddEmployee");
+		
+		String[] Employee=new String[4];
+		for(int RowIndex=1;RowIndex<5;RowIndex++) {
+			Row AddEmployeeRow=AddEmployeeSheet.getRow(RowIndex);
+			for(int CellIndex=0;CellIndex<4;CellIndex++) {
+				if(CellIndex==3) {
+					firstname.sendKeys(Employee[0]);
+					middlename.sendKeys(Employee[1]);
+					lastname.sendKeys(Employee[2]);
+					EmpID=EmployeeID.getAttribute("value");
+					
+					FileOutputStream TestDataResultFile=new FileOutputStream("C:\\Users\\RAMBABU\\Desktop\\OrangeHRM\\OrangaHRM\\src\\test\\java\\com\\ExcelResultFiles\\AddEmployeeResult.xlsx");
+					AddEmployeeRowOfCell=AddEmployeeRow.createCell(CellIndex);
+					AddEmployeeRowOfCell.setCellValue(EmpID);
+					workbook.write(TestDataResultFile);
+					SaveButton.click();
+					driver.navigate().back();
+				}
+				else {
+					Cell AddEmployeeRowOfCell=AddEmployeeRow.getCell(CellIndex);
+					Employee[CellIndex]=AddEmployeeRowOfCell.getStringCellValue();
+				}
+			}
+		}
+		
+		
+	}
+}

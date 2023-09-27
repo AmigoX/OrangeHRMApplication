@@ -1,0 +1,102 @@
+package com.LoginPage;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.testng.annotations.Test;
+
+import com.BaseTest.DriverSetup;
+import com.BaseTest.FilesSetup;
+import com.Utility.Logs;
+public class OrangeHRMLoginPage extends DriverSetup{
+	public static String PropertyFile="C:\\Users\\RAMBABU\\Desktop\\OrangeHRM\\OrangaHRM\\src\\main\\java\\com\\Config\\OrangeHRMElements.properties";
+	String ActualResult;
+	String ExpectedResult="http://127.0.0.1/orangehrm-4.2.0.1/symfony/web/index.php/auth/validateCredentials";
+	String[] Credential=new String[3];
+	public static String ExcelFile="C:\\Users\\RAMBABU\\Desktop\\OrangeHRM\\OrangaHRM\\src\\main\\java\\com\\ApplicationTestDataFiles\\TestData.xlsx";
+	XSSFSheet TestDataResultSheet;
+	Row NewRow;
+	@Test(priority=0)
+	public void Login() throws IOException {
+	
+/*
+//		Going to read properties of Element from property file
+		FileInputStream PropertiesFile=new FileInputStream("C:\\Users\\RAMBABU\\Desktop\\OrangeHRM\\OrangaHRM\\src\\test\\java\\com\\config\\OrangeHRMElemnts.properties");
+		property=new Properties();
+		property.load(PropertiesFile);
+
+ */
+/*
+//		FilesSetup.PropertieFileSetup(PropertyFile);
+		FileInputStream ExcelTestDataFile=new FileInputStream("C:\\Users\\RAMBABU\\Desktop\\OrangeHRM\\OrangaHRM\\src\\main\\java\\com\\ApplicationTestDataFiles\\TestData.xlsx");
+		workbook=new XSSFWorkbook(ExcelTestDataFile);
+		TestDataSheet=workbook.getSheet("LoginCredentials");
+*/
+		FilesSetup.ExcelFileSetup(ExcelFile,"LoginCredentials");
+		for(int rowIndex=1;rowIndex<8;rowIndex++) {
+			NewRow=FilesSetup.TestDataSheet.getRow(rowIndex);
+			for(int cellIndex=0;cellIndex<2;cellIndex++) {
+				Cell UserNameRowOfCell=NewRow.getCell(cellIndex);
+				Credential[cellIndex]=UserNameRowOfCell.getStringCellValue();
+//				System.out.print(Credential[cellIndex]+" , ");
+//				Logs.Info(Credential[cellIndex]+" , ");
+			}
+			FilesSetup.PropertieFileSetup(PropertyFile);
+//		Identification of the UserName 		
+//			By UsernameProperty=By.id(property.getProperty("loginPageUsernameProperty"));
+			By UsernameProperty=By.id(FilesSetup.PropertieFileSetup("loginPageUsernameProperty"));
+			WebElement Username=driver.findElement(UsernameProperty);
+			Username.sendKeys(Credential[0]);
+		
+//		Identification of the Password
+			By PasswordProperty=By.name(FilesSetup.PropertieFileSetup("loginPagePasswordProperty"));
+			WebElement Password=driver.findElement(PasswordProperty);
+			Password.sendKeys(Credential[1]);
+		
+//		Identification of the Login Button
+			By LoginButtonProperty=By.className(FilesSetup.PropertieFileSetup("loginPageLoginButtonProperty"));
+			WebElement LoginButton=driver.findElement(LoginButtonProperty);
+			LoginButton.click();
+			
+//			-----------------------Validation of the Dashboard-----------------------
+			ActualResult=driver.getCurrentUrl();
+//			Store Result of TestData after validation of Actual and Expected Result
+			FileOutputStream ResultFile=new FileOutputStream("C:\\Users\\RAMBABU\\Desktop\\OrangeHRM\\OrangaHRM\\src\\main\\java\\com\\ApplicationTestResultFiles\\TestDataResult.xlsx");
+//			NewRow=TestDataSheet.getRow(1);
+			Cell ResultRowOfCell=NewRow.createCell(2);
+
+			if(ActualResult.contains(ExpectedResult)) {
+				ResultRowOfCell.setCellValue("Failed");
+				FilesSetup.workbook.write(ResultFile);
+//				System.out.println("******Invalid Login credentials******");
+				Logs.Info("******Invalid Login credentials******");
+			}
+			else {
+				ResultRowOfCell.setCellValue("Passed");
+				FilesSetup.workbook.write(ResultFile);
+//				System.out.println("******Successfully Login into OrangeHRM apllication******");
+				Logs.Info("******Successfully Login into OrangeHRM appllication******");
+			}	
+		}
+		FilesSetup.workbook.close();
+	}
+	
+	@Test(enabled=false,priority=1)
+	public void LogOut() throws IOException {
+		By WelcomeDashboardProperty=By.id(FilesSetup.PropertieFileSetup("employeeDashboardProperty"));
+		WebElement welcome=driver.findElement(WelcomeDashboardProperty);
+		welcome.click();
+		
+		By LogoutProperty=By.linkText(FilesSetup.PropertieFileSetup("employeeLogoutProperty"));
+		WebElement Logout=driver.findElement(LogoutProperty);
+		Logout.click();
+		
+//		System.out.println("******Successfully Logout the OrangeHRM application******");
+		Logs.Info("******Successfully Logout the OrangeHRM application******");
+	}
+} 

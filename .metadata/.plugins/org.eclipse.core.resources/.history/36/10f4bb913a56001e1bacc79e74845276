@@ -1,0 +1,33 @@
+package com.BaseTest;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+public class FilesSetup  {
+	public static FileInputStream PropertiesFile;
+	public static Properties property;
+	public static String PropertyFile="C:\\Users\\RAMBABU\\Desktop\\OrangeHRM\\OrangaHRM\\src\\main\\java\\com\\Config\\OrangeHRMElements.properties";
+	
+	public static FileInputStream ExcelTestDatFile;
+	public static String ExcelFile="C:\\Users\\RAMBABU\\Desktop\\OrangeHRM\\OrangaHRM\\src\\main\\java\\com\\ApplicationTestDataFiles\\TestData.xlsx";
+	public static XSSFWorkbook workbook;
+	public static XSSFSheet TestDataSheet;
+	
+	public static void ExcelFileSetup() throws IOException {
+		ExcelTestDatFile=new FileInputStream("C:\\Users\\RAMBABU\\Desktop\\OrangeHRM\\OrangaHRM\\src\\main\\java\\com\\ApplicationTestDataFiles\\TestData.xlsx");
+		workbook=new XSSFWorkbook(ExcelTestDatFile);
+		TestDataSheet=workbook.getSheet("LoginCredentials");
+	}
+	
+	public static String PropertieFileSetup(String ElementProperty) throws IOException {
+		PropertiesFile=new FileInputStream(PropertyFile);
+		property=new Properties();
+		property.load(PropertiesFile);
+		ElementProperty=property.getProperty(ElementProperty);
+		return ElementProperty;
+	}
+}

@@ -1,0 +1,31 @@
+package com.BaseTest;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+public class FilesSetup  {
+	public static FileInputStream PropertiesFile;
+	public static Properties property;
+	
+	public static FileInputStream ExcelTestDatFile;
+	public static XSSFWorkbook workbook;
+	public static XSSFSheet TestDataSheet;
+	
+	public static void ExcelFileSetup(String ExcelFile,String ExcelSheet) throws IOException {
+		ExcelTestDatFile=new FileInputStream(ExcelFile);
+		workbook=new XSSFWorkbook(ExcelTestDatFile);
+		TestDataSheet=workbook.getSheet(ExcelSheet);
+	}
+	
+	public static void PropertieFileSetup(String PropertyFile) throws IOException {
+		PropertiesFile=new FileInputStream(PropertyFile);
+		property=new Properties();
+		property.load(PropertiesFile);
+//		ElementProperty=property.getProperty(ElementProperty);
+//		return ElementProperty;
+	}
+}

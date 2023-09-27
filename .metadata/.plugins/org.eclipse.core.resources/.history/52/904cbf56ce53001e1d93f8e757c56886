@@ -1,0 +1,8 @@
+package com.Utility;
+
+import io.opentelemetry.api.logs.Logger;
+
+public class Logs {
+	Logger logs=L
+
+}

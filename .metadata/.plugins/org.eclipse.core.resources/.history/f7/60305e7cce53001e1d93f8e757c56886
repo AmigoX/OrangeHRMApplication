@@ -1,0 +1,9 @@
+package com.Utility;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
+
+public class Logs {
+	Logger logs=L
+
+}
